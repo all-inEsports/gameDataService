@@ -37,8 +37,8 @@ npm run test
 ## Endpoints
 
 ```sh
-GET /v1/games?page=1&perPage=10
-GET /v1/games/:id
+GET /ps/games?page=1&perPage=10
+GET /ps/games/:id
 ```
 
 ## Author
