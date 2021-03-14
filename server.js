@@ -14,8 +14,9 @@ app.use(cors());
 app.get("/ps/games", async (req, res) => {
   let page = req.query.page || 1;
   let perPage = req.query.perPage || 10;
+  let game = req.query.game;
   data
-    .getAllMatches(page, perPage)
+    .getAllMatches(game,page, perPage)
     .then((data) => {
       res.json(data);
     })
@@ -35,9 +36,11 @@ app.get("/ps/games/:id", (req, res) => {
     });
 });
 
-cron.schedule("* 12 * * *", () => {
+cron.schedule("* 2 * * *", () => {
   console.log("running every 1");
-  data.getAllUpcomingMatches();
+  data.getLOLUpcomingMatches();
+  data.getCSGOUpcomingMatches();
+  data.getDOTA2UpcomingMatches();
 });
 data
   .connect()
