@@ -47,5 +47,8 @@ const GameDataSchema = new Schema({
   serie: [Object],
   live: [Object],
   begin_at: [Object],
+  game:{
+    required:true
+  }
 });
 module.exports = mongoose.connection.model("GameData", GameDataSchema);

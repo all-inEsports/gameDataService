@@ -36,7 +36,7 @@ app.get("/ps/games/:id", (req, res) => {
     });
 });
 
-cron.schedule("* 2 * * *", () => {
+cron.schedule("1 * * * *", () => {
   console.log("running every 1");
   data.getLOLUpcomingMatches();
   data.getCSGOUpcomingMatches();
