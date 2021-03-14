@@ -8,14 +8,16 @@ Object.freeze(games);
 
 let getAll = async (game,page=1) =>{
   try{
+    console.log(game+page);
     let res = await (
       await fetch(
         `https://api.pandascore.co/${game}/matches/upcoming?page=${page}&per_page=100&token=mHD8iOcLA_ckaPAEU9SLB1-6TqEfGKNgC85AkSWm-caYC50H4No`
       )
     ).json();
+    console.log(game + " " +res.length);
         if(res.length >= 100)
         {
-          res.concat(await getAll(page+1));
+          res.concat(await getAll(game,page+1));
         }
         return res;
   }catch(e){
