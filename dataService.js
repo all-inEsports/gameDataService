@@ -120,7 +120,8 @@ module.exports = (mongoDBConnectionString) => {
     getAllMatches: (game,page, perPage) => {
       return new Promise((resolve, reject) => {
         if (+page && +perPage) {
-          let filter = {game};
+          
+          let filter = game ? {game} : {};
 
           page = +page - 1;
           GameData.find(filter)
