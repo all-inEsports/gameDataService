@@ -48,6 +48,7 @@ const GameDataSchema = new Schema({
   live: [Object],
   begin_at: [Object],
   game:{
+    type: String,
     required:true
   }
 });
