@@ -1,40 +1,46 @@
 const mongoose = require("mongoose");
 const fetch = require("node-fetch");
 const GameData = require("./model/GameData");
+const date = require("date-and-time");
 
 
-const games = {LOL:"lol",CSGO:"csgo",DOTA2:"dota2"};
+const games = { LOL: "lol", CSGO: "csgo", DOTA2: "dota2" };
 Object.freeze(games);
 
-let getAll = async (game,page=1) =>{
-  try{
-    console.log(game+page);
+let getAll = async (game, page = 1) => {
+  try {
+    console.log(game + page);
+    const now = new Date();
+    const dateNow = date.format(now, 'YYYY-MM-DD');
+    const dateNowPlus7 = date.format(new Date(now.setDate(now.getDate() + 3)), 'YYYY-MM-DD');
+    let URL = `https://api.pandascore.co/${game}/matches/upcoming?range[begin_at]=${dateNow},${dateNowPlus7}&page=${page}&per_page=100&token=mHD8iOcLA_ckaPAEU9SLB1-6TqEfGKNgC85AkSWm-caYC50H4No`;
+    console.log(URL + "wow");
     let res = await (
-      await fetch(
-        `https://api.pandascore.co/${game}/matches/upcoming?page=${page}&per_page=100&token=mHD8iOcLA_ckaPAEU9SLB1-6TqEfGKNgC85AkSWm-caYC50H4No`
-      )
+      await fetch(URL)
     ).json();
-    console.log(game + " " +res.length);
-        if(res.length >= 100)
-        {
-          res.concat(await getAll(game,page+1));
-        }
-        return res;
-  }catch(e){
+    console.log(game + " " + res.length);
+    if (res.length >= 100) {
+      res.concat(await getAll(game, page + 1));
+    }
+    return res;
 
+  } catch (e) {
+    console.log(e);
   }
 }
 
 let getLOLUpcomingMatches = async () => {
   try {
-    let res = await getAll(games.LOL)
+    let res = await getAll(games.LOL);
+
+    console.log(typeof res);
     await Promise.all(
       res.map((data) => {
         return new Promise(async (resolve) => {
           try {
             data.game = games.LOL;
             await GameData.findOneAndDelete({ id: [data.id] });
-            
+
             const add = new GameData(data);
             await add.save();
             resolve(obj);
@@ -118,15 +124,14 @@ module.exports = (mongoDBConnectionString) => {
       });
     },
 
-    getAllMatches: (game,page, perPage) => {
+    getAllMatches: (game, page, perPage) => {
       return new Promise((resolve, reject) => {
         if (+page && +perPage) {
-          
-          let filter = game ? {game} : {};
+
+          let filter = game ? { game } : {};
 
           page = +page - 1;
           GameData.find(filter)
-            .sort({ begin_at: -1 })
             .skip(page * +perPage)
             .limit(+perPage)
             .exec()
@@ -183,8 +188,8 @@ module.exports = (mongoDBConnectionString) => {
       });
     },
     getGames: () => {
-      return new Promise((resolve,reject)=>{
-        GameData.find({},"")
+      return new Promise((resolve, reject) => {
+        GameData.find({}, "")
       })
 
     },

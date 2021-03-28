@@ -36,17 +36,17 @@ app.get("/ps/games/:id", (req, res) => {
     });
 });
 
-cron.schedule("* 2 * * * *", () => {
+cron.schedule("1 * * * * *", () => {
   console.log("running every 4-5");
   data.getLOLUpcomingMatches();
 });
 
-cron.schedule("* 2 * * *", () => {
+cron.schedule("1 * * * *", () => {
   console.log("running every 4-5");
   data.getCSGOUpcomingMatches();
 });
 
-cron.schedule("* 2 * * *", () => {
+cron.schedule("1 * * * *", () => {
   console.log("running every 4-5");
   data.getDOTA2UpcomingMatches();
 });
