@@ -34,6 +34,7 @@ let getLOLUpcomingMatches = async () => {
           try {
             data.game = games.LOL;
             await GameData.findOneAndDelete({ id: [data.id] });
+            
             const add = new GameData(data);
             await add.save();
             resolve(obj);
@@ -125,7 +126,7 @@ module.exports = (mongoDBConnectionString) => {
 
           page = +page - 1;
           GameData.find(filter)
-            .sort({ Balance: -1 })
+            .sort({ begin_at: -1 })
             .skip(page * +perPage)
             .limit(+perPage)
             .exec()
