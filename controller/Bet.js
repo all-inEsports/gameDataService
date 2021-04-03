@@ -16,7 +16,9 @@ module.exports = {
     resolveBets : async (betId,bet) => {
         try{
             const route= `v1/bet/resolve/${betId}`
-            let res = await fetch((new Url(apiUrl+route)),{method:'PUT',body:bet});
+            console.log(route);
+            console.log(bet);
+            let res = await fetch((new Url(apiUrl+route)),{method:'PUT',body:JSON.stringify(bet), headers: { 'Content-Type': 'application/json'}});
             let msg = (await res.json())?.message.toString();
 
             if(msg.indexOf('error')>-1){

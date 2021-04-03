@@ -62,16 +62,16 @@ let getGames = async (gameName, isUpcoming) => {
             data.game = gameName;
 
             if (!isUpcoming & data.winner != null) {
-              let gameDocument = await GameData.findOneAndUpdate({ id: [data.id] }, { $set: data });
+              let gameDocument = await GameData.findOneAndUpdate({ id: data.id }, { $set: data });
               let bets = gameDocument ? await bet.getBetsById(gameDocument._id) : null;
 
               if (bets) {
-                console.log(bets);
+                let winners =  bets.filter(data=> data.TeamId == gameDocument.winner_id[0]);
+                let winnerMultiple = winners.length > 0 ? bets.map(data => data.Amount).reduce((a,b)=>a+b) / winners.map(data => data.Amount).reduce((a,b)=>a+b) : 0;
                 Promise.all(bets.map(betToResolve => {
-                  console.log(betToResolve);
-                  console.log(gameDocument.winner);
-                  if ([betToResolve.TeamId] == gameDocument.winner) {
+                  if (betToResolve.TeamId == gameDocument.winner_id[0] && !betToResolve.IsInProgress) {
                     betToResolve.IsWin = true;
+                    betToResolve.AmountWon = betToResolve.Amount * winnerMultiple;
                   }
                   betToResolve.IsInProgress = false;
                   bet.resolveBets(betToResolve._id, betToResolve)
