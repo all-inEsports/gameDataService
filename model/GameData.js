@@ -39,7 +39,11 @@ const GameDataSchema = new Schema({
   forfeit: [Object],
   tournament: [Object],
   rescheduled: [Object],
-  id: [Object],
+  id: {
+    type: Number,
+    required:true,
+    unique:true
+  },
   game_advantage: [Object],
   serie_id: [Object],
   opponents: [Object],

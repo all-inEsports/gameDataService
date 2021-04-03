@@ -6,6 +6,18 @@ const app = express();
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const data = require("./dataService")(process.env.URI);
+data
+  .connect()
+  .then(() => {
+    app.listen(port, () => {
+      console.log("API listening on: " + port);
+    });
+  })
+  .catch((err) => {
+    console.log("unable to start the server: " + err);
+    process.exit();
+  });
+
 const port = process.env.PORT || 3000;
 
 app.use(bodyParser.json());
@@ -36,31 +48,20 @@ app.get("/ps/games/:id", (req, res) => {
     });
 });
 
-cron.schedule("5 * * * * *", () => {
+cron.schedule(" 5 * * * * *", () => {
   console.log("running every 30 ");
-  data.getGames(data.games.LOL,true);
-  data.getGames(data.games.LOL,false);
+ data.getGames(data.games.LOL,true);
+ data.getGames(data.games.LOL,false);
 });
 
-cron.schedule("5 * * * *", () => {
+cron.schedule("5 * * * *",  () => {
   console.log("running every 30");
   data.getGames(data.games.CSGO,true);
-  data.getGames(data.games.CSGO,false);
+  //data.getGames(data.games.CSGO,false);
 });
 
 cron.schedule("5 * * * *", () => {
   console.log("running every 30");
   data.getGames(data.games.DOTA2,true);
-  data.getGames(data.games.DOTA2,false);
+  //data.getGames(data.games.DOTA2,false);
 });
-data
-  .connect()
-  .then(() => {
-    app.listen(port, () => {
-      console.log("API listening on: " + port);
-    });
-  })
-  .catch((err) => {
-    console.log("unable to start the server: " + err);
-    process.exit();
-  });

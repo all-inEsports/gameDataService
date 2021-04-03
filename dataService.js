@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+mongoose.set('useFindAndModify', false);
 const fetch = require("node-fetch");
 const GameData = require("./model/GameData");
 const date = require("date-and-time");
@@ -59,10 +60,11 @@ let getGames = async (gameName, isUpcoming) => {
         return new Promise(async (resolve) => {
           try {
             data.game = gameName;
-            let gameDocument = await GameData.findOneAndUpdate({ id: [data.id] },{$set:data});
-            if (!isUpcoming & gameDocument.winner != null) {
-              let bets = await bet.getBetsById(gameDocument._id);
-              
+
+            if (!isUpcoming & data.winner != null) {
+              let gameDocument = await GameData.findOneAndUpdate({ id: [data.id] }, { $set: data });
+              let bets = gameDocument ? await bet.getBetsById(gameDocument._id) : null;
+
               if (bets) {
                 console.log(bets);
                 Promise.all(bets.map(betToResolve => {
@@ -76,9 +78,13 @@ let getGames = async (gameName, isUpcoming) => {
                 }));
               }
             }
-            resolve(obj);
+            
+              let add = new GameData(data);
+              await add.save();
+            
+            resolve(data);
           } catch (e) {
-            //console.log(e);
+            console.log(e);
             resolve(e);
           }
         });
@@ -97,6 +103,7 @@ module.exports = (mongoDBConnectionString) => {
         let db = mongoose.createConnection(mongoDBConnectionString, {
           useNewUrlParser: true,
           useUnifiedTopology: true,
+          useFindAndModify: false
         });
 
         db.on("error", (err) => {
