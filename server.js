@@ -36,19 +36,22 @@ app.get("/ps/games/:id", (req, res) => {
     });
 });
 
-cron.schedule("30 * * * * *", () => {
+cron.schedule("5 * * * * *", () => {
   console.log("running every 30 ");
-  data.getLOLUpcomingMatches();
+  data.getGames(data.games.LOL,true);
+  data.getGames(data.games.LOL,false);
 });
 
-cron.schedule("30 * * * *", () => {
+cron.schedule("5 * * * *", () => {
   console.log("running every 30");
-  data.getCSGOUpcomingMatches();
+  data.getGames(data.games.CSGO,true);
+  data.getGames(data.games.CSGO,false);
 });
 
-cron.schedule("30 * * * *", () => {
+cron.schedule("5 * * * *", () => {
   console.log("running every 30");
-  data.getDOTA2UpcomingMatches();
+  data.getGames(data.games.DOTA2,true);
+  data.getGames(data.games.DOTA2,false);
 });
 data
   .connect()

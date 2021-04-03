@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 const fetch = require("node-fetch");
 const GameData = require("./model/GameData");
 const date = require("date-and-time");
+const bet = require("./controller/Bet");
 
 
 const games = { LOL: "lol", CSGO: "csgo", DOTA2: "dota2" };
@@ -12,7 +13,7 @@ let getAll = async (game, page = 1) => {
     console.log(game + page);
     const now = new Date();
     const dateNow = date.format(now, 'YYYY-MM-DD');
-    const dateNowPlus7 = date.format(new Date(now.setDate(now.getDate() + 3)), 'YYYY-MM-DD');
+    const dateNowPlus7 = date.format(new Date(now.setDate(now.getDate() + 7)), 'YYYY-MM-DD');
     let URL = `https://api.pandascore.co/${game}/matches/upcoming?range[begin_at]=${dateNow},${dateNowPlus7}&page=${page}&per_page=100&token=mHD8iOcLA_ckaPAEU9SLB1-6TqEfGKNgC85AkSWm-caYC50H4No`;
     console.log(URL + "wow");
     let res = await (
@@ -28,21 +29,53 @@ let getAll = async (game, page = 1) => {
     console.log(e);
   }
 }
-
-let getLOLUpcomingMatches = async () => {
+let getResults = async (game, page = 1) => {
   try {
-    let res = await getAll(games.LOL);
+    console.log(game + page);
+    const now = new Date();
+    const dateNow = date.format(now, 'YYYY-MM-DD');
+    const dateNowMinus7 = date.format(new Date(now.setDate(now.getDate() - 7)), 'YYYY-MM-DD');
+    let URL = `https://api.pandascore.co/${game}/matches/past?range[begin_at]=${dateNowMinus7},${dateNow}&page=${page}&per_page=100&token=mHD8iOcLA_ckaPAEU9SLB1-6TqEfGKNgC85AkSWm-caYC50H4No`;
+    console.log(URL + "wow");
+    let res = await (
+      await fetch(URL)
+    ).json();
+    console.log(game + " " + res.length);
+    if (res.length >= 100) {
+      res.concat(await getResults(game, page + 1));
+    }
+    return res;
 
+  } catch (e) {
+    console.log(e);
+  }
+}
+let getGames = async (gameName, isUpcoming) => {
+  try {
+    let res = isUpcoming ? await getAll(gameName) : await getResults(gameName);
     console.log(typeof res);
     await Promise.all(
       res.map((data) => {
         return new Promise(async (resolve) => {
           try {
-            data.game = games.LOL;
-            await GameData.findOneAndDelete({ id: [data.id] });
-
-            const add = new GameData(data);
-            await add.save();
+            data.game = gameName;
+            let gameDocument = await GameData.findOneAndUpdate({ id: [data.id] },{$set:data});
+            if (!isUpcoming & gameDocument.winner != null) {
+              let bets = await bet.getBetsById(gameDocument._id);
+              
+              if (bets) {
+                console.log(bets);
+                Promise.all(bets.map(betToResolve => {
+                  console.log(betToResolve);
+                  console.log(gameDocument.winner);
+                  if ([betToResolve.TeamId] == gameDocument.winner) {
+                    betToResolve.IsWin = true;
+                  }
+                  betToResolve.IsInProgress = false;
+                  bet.resolveBets(betToResolve._id, betToResolve)
+                }));
+              }
+            }
             resolve(obj);
           } catch (e) {
             //console.log(e);
@@ -51,59 +84,11 @@ let getLOLUpcomingMatches = async () => {
         });
       })
     );
-  } catch (e) {
+  }
+  catch (e) {
     console.log(e);
   }
-};
-
-let getDOTA2UpcomingMatches = async () => {
-  try {
-    let res = await getAll(games.DOTA2)
-    await Promise.all(
-      res.map((data) => {
-        return new Promise(async (resolve) => {
-          try {
-            data.game = games.DOTA2;
-            await GameData.findOneAndDelete({ id: [data.id] });
-            const add = new GameData(data);
-            await add.save();
-            resolve(obj);
-          } catch (e) {
-            //console.log(e);
-            resolve(e);
-          }
-        });
-      })
-    );
-  } catch (e) {
-    console.log(e);
-  }
-};
-
-let getCSGOUpcomingMatches = async () => {
-  try {
-    let res = await getAll(games.CSGO)
-    await Promise.all(
-      res.map((data) => {
-        return new Promise(async (resolve) => {
-          try {
-            data.game = games.CSGO;
-            await GameData.findOneAndDelete({ id: [data.id] });
-            const add = new GameData(data);
-            await add.save();
-            resolve(obj);
-          } catch (e) {
-            //console.log(e);
-            resolve(e);
-          }
-        });
-      })
-    );
-  } catch (e) {
-    console.log(e);
-  }
-};
-
+}
 module.exports = (mongoDBConnectionString) => {
   return {
     // Connection to db and defines match model
@@ -193,8 +178,7 @@ module.exports = (mongoDBConnectionString) => {
       })
 
     },
-    getLOLUpcomingMatches,
-    getCSGOUpcomingMatches,
-    getDOTA2UpcomingMatches
+    getGames,
+    games
   };
 };
