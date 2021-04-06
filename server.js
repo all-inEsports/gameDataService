@@ -48,20 +48,22 @@ app.get("/ps/games/:id", (req, res) => {
     });
 });
 
-cron.schedule("55 * * * *", async () => {
+cron.schedule("*/30 * * * *", () => {
   console.log("running every 30 ");
-  await data.getGames(data.games.LOL, true);
-  await data.getGames(data.games.LOL, false);
+  data.getGames(data.games.LOL, true);
+
+  data.getGames(data.games.CSGO, true);
+
+  data.getGames(data.games.DOTA2, true);
+
 });
 
-cron.schedule("55 * * * *", async () => {
-  console.log("running every 30");
-  await data.getGames(data.games.CSGO, true);
-  await data.getGames(data.games.CSGO, false);
-});
+cron.schedule("*/55 * * * *", () => {
+  console.log("running every 30 ");
 
-cron.schedule("55 * * * *", async () => {
-  console.log("running every 30");
-  await data.getGames(data.games.DOTA2, true);
-  await data.getGames(data.games.DOTA2, false);
+  data.getGames(data.games.LOL, false);
+
+  data.getGames(data.games.CSGO, false);
+
+  data.getGames(data.games.DOTA2, false);
 });

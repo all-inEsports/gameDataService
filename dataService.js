@@ -53,8 +53,13 @@ let getResults = async (game, page = 1) => {
 }
 let getGames = async (gameName, isUpcoming) => {
   try {
+    console.log(`get ${gameName} games`);
     let res = isUpcoming ? await getAll(gameName) : await getResults(gameName);
     console.log(typeof res);
+    if(!res)
+    {
+      res = [];
+    }
     await Promise.all(
       res.map((data) => {
         return new Promise(async (resolve) => {
