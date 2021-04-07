@@ -78,7 +78,6 @@ let getGames = async (gameName, isUpcoming) => {
                     betToResolve.IsWin = true;
                     betToResolve.AmountWon = betToResolve.Amount * winnerMultiple;
                   }
-                  betToResolve.IsInProgress = false;
                   bet.resolveBets(betToResolve._id, betToResolve)
                 }));
               }
