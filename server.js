@@ -27,10 +27,12 @@ app.get("/ps/games", async (req, res) => {
   let page = req.query.page || 1;
   let perPage = req.query.perPage || 10;
   let game = req.query.game;
+  let date = req.query.date;
   data
     .getAllMatches(game,page, perPage)
     .then((data) => {
-      res.json(data);
+
+      res.json(date && data.length > 0? data.filter( game => new Date(game.begin_at[0]) > new Date(date)): data);
     })
     .catch((err) => {
       res.json({ message: `an error occurred: ${err}` });
