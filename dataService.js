@@ -35,7 +35,7 @@ let getResults = async (game, page = 1) => {
     console.log(game + page);
     const now = new Date();
     const dateNow = date.format(now, 'YYYY-MM-DD');
-    const dateNowMinus7 = date.format(new Date(now.setDate(now.getDate() - 7)), 'YYYY-MM-DD');
+    const dateNowMinus7 = date.format(new Date(now.setDate(now.getDate() - 14)), 'YYYY-MM-DD');
     let URL = `https://api.pandascore.co/${game}/matches/past?range[begin_at]=${dateNowMinus7},${dateNow}&page=${page}&per_page=100&token=mHD8iOcLA_ckaPAEU9SLB1-6TqEfGKNgC85AkSWm-caYC50H4No`;
     console.log(URL + "wow");
     let res = await (
