@@ -120,11 +120,14 @@ module.exports = (mongoDBConnectionString) => {
       });
     },
 
-    getAllMatches: (game, page, perPage) => {
+    getAllMatches: (game, page, perPage,dateAfter) => {
       return new Promise((resolve, reject) => {
         if (+page && +perPage) {
 
           let filter = game ? { game } : {};
+          filter.begin_at = date ? {$gte: date.format(new Date(dateAfter), 'YYYY-MM-DD')} : date;
+
+          console.log(filter);
 
           page = +page - 1;
           GameData.find(filter)

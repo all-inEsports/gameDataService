@@ -29,10 +29,10 @@ app.get("/ps/games", async (req, res) => {
   let game = req.query.game;
   let date = req.query.date;
   data
-    .getAllMatches(game,page, perPage)
+    .getAllMatches(game,page, perPage,date)
     .then((data) => {
 
-      res.json(date && data.length > 0? data.filter( game => new Date(game.begin_at[0]) > new Date(date)): data);
+      res.json(data);
     })
     .catch((err) => {
       res.json({ message: `an error occurred: ${err}` });
@@ -49,6 +49,7 @@ app.get("/ps/games/:id", (req, res) => {
       res.json({ message: `an error occurred: ${err}` });
     });
 });
+
 
 cron.schedule("*/30 * * * *", () => {
   console.log("running every 30 ");

@@ -50,7 +50,10 @@ const GameDataSchema = new Schema({
   number_of_games: [Object],
   serie: [Object],
   live: [Object],
-  begin_at: [Object],
+  begin_at: {
+    type: Date,
+    required:true,
+  },
   game:{
     type: String,
     required:true
