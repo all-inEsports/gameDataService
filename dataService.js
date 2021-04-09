@@ -125,7 +125,7 @@ module.exports = (mongoDBConnectionString) => {
         if (+page && +perPage) {
 
           let filter = game ? { game } : {};
-          filter.begin_at = dateAfter ? {$gte : dateAfter.toString()} : undefined;
+          filter.begin_at = dateAfter ? {$gte : dateAfter.toString()} : {$gte : '0'};
 
           console.log(filter);
 
