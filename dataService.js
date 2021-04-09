@@ -125,7 +125,7 @@ module.exports = (mongoDBConnectionString) => {
         if (+page && +perPage) {
 
           let filter = game ? { game } : {};
-          filter.begin_at = date ? {$gte: date.format(new Date(dateAfter), 'YYYY-MM-DD')} : date;
+          
 
           console.log(filter);
 
