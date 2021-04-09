@@ -61,7 +61,7 @@ cron.schedule("*/30 * * * *", () => {
 
 });
 
-cron.schedule("*/1 * * * *", () => {
+cron.schedule("*/55 * * * *", () => {
   console.log("running every 30 ");
 
   data.getGames(data.games.LOL, false);
