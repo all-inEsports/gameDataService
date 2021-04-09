@@ -131,6 +131,7 @@ module.exports = (mongoDBConnectionString) => {
 
           page = +page - 1;
           GameData.find(filter)
+            .sort({begin_at : 'asc'})
             .skip(page * +perPage)
             .limit(+perPage)
             .exec()
